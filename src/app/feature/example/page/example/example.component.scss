@@ -1,0 +1,12 @@
+section {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+  //https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+  > * {
+    flex: 1 1 calc(400px - (2rem / 3));
+  }
+}

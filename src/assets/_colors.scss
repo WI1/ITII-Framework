@@ -1,0 +1,74 @@
+$mat-primary: (
+  50: #fffee6,
+  100: #fffac2,
+  200: #fff699,
+  300: #fff16e,
+  400: #fdec4a,
+  500: #fbe71e,
+  600: #ffdc26,
+  700: #ffc31d,
+  800: #ffab13,
+  900: #ff8000,
+  contrast: (
+    50: #ff8000,
+    100: #ff8000,
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: rgba(black, 0.87),
+    600: rgba(black, 0.87),
+    700: rgba(black, 0.87),
+    800: white,
+    900: white,
+  )
+);
+
+$mat-accent: (
+  50: #efe6fa,
+  100: #d5c3f2,
+  200: #b99ae9,
+  300: #9c70e1,
+  400: #864fdb,
+  500: #6e2bd3,
+  600: #6326cd,
+  700: #541dc4,
+  800: #4516be,
+  900: #2700b4,
+  contrast: (
+    50: #2700b4,
+    100: #2700b4,
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
+
+$mat-danger: (
+  50: #ffe8ee,
+  100: #ffc6d2,
+  200: #f98c98,
+  300: #f25a6f,
+  400: #ff154c,
+  500: #ff002f,
+  600: #f7002f,
+  700: #e50029,
+  800: #d80021,
+  900: #c80014,
+  contrast: (
+    50: #c80014,
+    100: #c80014,
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
