@@ -2,32 +2,33 @@ import { Routes } from '@angular/router';
 
 // Hier werden alle aufrufbaren Routen für unsere Seite definiert. Unsere Anwendung hat aktuell 5 Ansichten, wobei die 'overview' als Startpunkt definiert ist.
 export const routes: Routes = [
-  { path: '', redirectTo: 'overview', pathMatch: 'full' },
+  { path: '', redirectTo: 'aufgabe5', pathMatch: 'full' },
   {
-    path: 'overview',
+    path: 'aufgabe5',
     loadChildren: () =>
-      import('./feature/overview/overview.routes').then(
-        (m) => m.OVERVIEW_ROUTES
+      import('./feature/aufgabe5/aufgabe5.routes').then(
+        (m) => m.AUFGABE5_ROUTES
       ),
   },
   {
-    path: 'realtime',
+    path: 'aufgabe1',
     loadChildren: () =>
-      import('./feature/realtime-data/realtime.routes').then(
-        (m) => m.REALTIME_ROUTES
-      ),
+      import('./feature/aufgabe1/aufgabe1.routes').then((m) => m.AUFGABE1_ROUTES),
   },
   {
-    path: 'predictive',
+    path: 'aufgabe2',
     loadChildren: () =>
-      import('./feature/predictive-data/predictive.routes').then(
-        (m) => m.PREDICTIVE_ROUTES
-      ),
+      import('./feature/aufgabe2/aufgabe2.routes').then((m) => m.AUFGABE2_ROUTES),
   },
   {
-    path: 'history',
+    path: 'aufgabe3',
     loadChildren: () =>
-      import('./feature/history/history.routes').then((m) => m.HISTORY_ROUTES),
+      import('./feature/aufgabe3/aufgabe3.routes').then((m) => m.AUFGABE3_ROUTES),
+  },
+  {
+    path: 'aufgabe4',
+    loadChildren: () =>
+      import('./feature/aufgabe4/aufgabe4.routes').then((m) => m.AUFGABE4_ROUTES),
   },
   {
     path: 'example',
