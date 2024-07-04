@@ -18,3 +18,95 @@ section {
         }
     }
 }
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+h1{
+    margin: 20px 0;
+    text-align: center;
+    font-weight: 700;
+    color: rgb(1, 94, 125);
+} 
+h2 {
+    margin: 20px 0;
+}
+
+.aufgabe1 {
+    margin-top: 40px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    width: 80%;
+    margin-top: 20px;
+}
+
+.tower {
+    width: 80px; /* Anpassung der Breite der Türme */
+    height: 200px; /* Anpassung der Höhe der Türme */
+    background-color: #ddd;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    margin: 0 5px; /* Verringere den Abstand hier */
+}
+
+.stock {
+    width: 100%;
+    background-color: #4caf50;
+    text-align: center;
+    color: white;
+    position: absolute;
+    bottom: 0;
+}
+
+.label {
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.container1, .container2 {
+    display: flex;
+}
+
+.item1 {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.item2 {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+    text-align: center;
+    color: green;
+    font-weight: bolder;
+}
+
+.container3 {
+    display: flex;
+}
+
+.button_aufgabe {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-right: 10px;
+}
+
