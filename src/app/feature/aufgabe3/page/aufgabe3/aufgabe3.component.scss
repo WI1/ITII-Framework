@@ -1,1 +1,36 @@
 // Hier werden spezifische Designregeln für die Aufgabe3-Seite gesetzt
+
+/* Grundlegendes Styling für den Container */
+.chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin: 20px;
+  }
+  
+  /* Styling für den Titel des Diagramms */
+  h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #333;
+  }
+  
+  /* Styling für das Canvas-Element des Diagramms */
+  canvas {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Styling für JSON-Ausgabe (falls benötigt) */
+  .json-output {
+    font-family: monospace;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    overflow-x: auto;
+    max-height: 300px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }

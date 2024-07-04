@@ -4,7 +4,60 @@ Dies erfordert eine kontinuierliche Überwachung der relevanten Parameter.<br>
 Die technische Umsetzung beinhaltet die Entwicklung einer Weboberfläche zur Echtzeitüberwachung und Trendanalyse der Sensordaten in der Logistik.</p>
 <hr>
 
-<!-- Ab hier könnt ihr gerne euren Code einfügen, viel Spaß! -->
+<h1> Sensordaten </h1>
+<p>{{getJsonValue | json}}</p>
+<!--<div style="display: block;">-->
+  <canvas id="myChart"></canvas>
+<!--</div>-->
 
+<!-- Ab hier könnt ihr gerne euren Code einfügen, viel Spaß! -->
+<!--
 <br>
-<p>Your code goes here...</p>
+<p>Your code goes here...test</p>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>test</h2>
+    <h3>test1</h3>
+    <button class="clicked">test knopf</button>
+</body>
+</html>
+
+<nav>
+  <ul>
+    <li><a routerLink="/dashboard">Dashboard</a></li>
+    <li><a routerLink="/quality-checks">Qualitätprüfungen</a></li>
+    <li><a routerLink="/product-list">Warenverzeichnis</a></li>
+    <li><a routerLink="/reports">Berichte</a></li>
+    <li><a routerLink="/settings">Einstellungen</a></li>
+    <li><a routerLink="/user-management">Benutzerverwaltung</a></li>
+  </ul>
+</nav>
+
+<div class="container">
+  <router-outlet></router-outlet>
+</div>
+
+<div>
+    <h1>Qualitätsüberprüfungen</h1>
+    <div *ngIf="sensorData">
+      <div *ngFor="let sensor of sensorData | keyvalue">
+        <div class="sensor-card">
+          <h2>{{ sensor.key }}</h2>
+          <div class="sensor-value">
+            <pre>{{ sensor.value | json }}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  <div *ngIf="sensorData && (sensorData | keyvalue).length === 0">
+    <p>Keine Sensordaten verfügbar/p>
+  </div>
+</div>
+-->
