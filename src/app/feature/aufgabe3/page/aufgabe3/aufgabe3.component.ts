@@ -29,13 +29,11 @@ export class Aufgabe3Component implements OnInit {
     temperature: false,
     battery: false,
     humidity: false,
-    trend: false,
-    weather: false
 };
 private temperaturChart: any;
 private batteryChart: any;
 private humidityChart: any;
-private trendChart: any;
+private correlationChart: any;
 
 constructor(private http: HttpClient){
   Chart.register(...registerables);
@@ -43,9 +41,6 @@ constructor(private http: HttpClient){
 
   ngOnInit(): void {
     this.getMethod();
-    //this.generateAndProcessFakeWeatherData();
-    //this.generateFakeWeatherForecast();
-    this.initializeCharts();
   }
 
   public getMethod() {
@@ -73,7 +68,7 @@ constructor(private http: HttpClient){
     const humidityValues = data.map((item: any) => item.components?.humidity?.value ?? 0);
     const batteryValues = data.map((item: any) => item.components?.battery?.value ?? 0);
     const alarmStatusValues = data.map((item: any) => item.components?.alarm?.value ?? 0);
-    
+
     
     // Überprüfen der Qualitätskriterien und Auslösen von Alarme
     this.checkQualityCriteria(temperatureValues, humidityValues, batteryValues, alarmStatusValues);
@@ -82,54 +77,19 @@ constructor(private http: HttpClient){
     const temperature = temperatureValues[temperatureValues.length - 1];
     this.createTemperatureChart(temperature);
 
-        //Batteriestatus
-    const battery = batteryValues[batteryValues.length -1];
-        this.createBatteryChart(battery);
+     // Batteriestatus
+    const battery = batteryValues.slice(-5); // Die letzten fünf Batteriestatus-Werte
+    this.createBatteryChart(battery);
 
             //Luftfeuchtigkeit
     const humidity = humidityValues[humidityValues.length -1];
     this.createHumidityChart(humidity);
 
-        //Trendanalyse
-        const forecastData = this.generateAndProcessFakeWeatherData();
-        //rausgenommen wegen 2 Values
-        //this.createTrendChart(timestamps, temperatureValues, humidityValues, forecastData);
-        this.createTrendChart(timestamps, temperatureValues);
-
-         
+      // Berechne und visualisiere Korrelationen
+      this.calculateAndDisplayCorrelations(temperatureValues, humidityValues);
   }
 
-  private generateAndProcessFakeWeatherData(): { timestamps: any[], temperatureValues: any[], humidityValues: any[] } {
-    const data = this.getJsonValue; // Annahme: Hier sind die simulierten Wetterdaten oder von der API erhaltenen Daten
-  
-    const timestamps = data.map((item: any) => new Date(item.baseStations[0]?.rxTime / 1e6).toLocaleTimeString());
-    const temperatureValues = data.map((item: any) => item.components?.internal_temp?.value ?? 0);
-    const humidityValues = data.map((item: any) => item.components?.humidity?.value ?? 0);
-  
-    return { timestamps, temperatureValues, humidityValues };
-  }
-  
-  private generateFakeWeatherForecast(): { forecastTimestamps: string[], forecastTemperatureValues: number[], forecastHumidityValues: number[] } {
-    const forecastTimestamps: string[] = [];
-    const forecastTemperatureValues: number[] = [];
-    const forecastHumidityValues: number[] = [];
-  
-    for (let i = 1; i <= 5; i++) {
-      const date = new Date();
-      date.setDate(date.getDate() + i);
-      forecastTimestamps.push(date.toISOString().split('T')[0]); // Datum im Format YYYY-MM-DD
-  
-      const fakeTemperature = Math.floor(Math.random() * 40); // Zufällige Temperatur zwischen 0 und 40°C
-      const fakeHumidity = Math.floor(Math.random() * 100); // Zufällige Luftfeuchtigkeit zwischen 0 und 100%
-  
-      forecastTemperatureValues.push(fakeTemperature);
-      forecastHumidityValues.push(fakeHumidity);
-    }
-  
-    return { forecastTimestamps, forecastTemperatureValues, forecastHumidityValues };
-  }
- 
-  private checkQualityCriteria(temperatureValues: number[], humidityValues: number[], batteryValues: number[], alarmStatusValues: number[]) {
+    private checkQualityCriteria(temperatureValues: number[], humidityValues: number[], batteryValues: number[], alarmStatusValues: number[]) {
     const latestTemperature = temperatureValues[temperatureValues.length - 1];
     const latestHumidity = humidityValues[humidityValues.length - 1];
     const latestBattery = batteryValues[batteryValues.length - 1];
@@ -162,83 +122,188 @@ constructor(private http: HttpClient){
         console.warn(message); // Einfacher Alert als Beispiel
       }
     
-  private createTemperatureChart(temperature: number) {
-    if (this.temperaturChart) {
-      this.temperaturChart.destroy();
-    }
-    this.temperaturChart = new Chart('temperatureChart', {
-      type: 'doughnut',
-      data: {
-        datasets: [{
-          data: [temperature, 40 - temperature],
-          backgroundColor: ['#FF7043', '#E0E0E0'],
-          hoverBackgroundColor: ['#FF7043', '#E0E0E0'],
-          borderWidth: 1
-        }],
-        labels: ['Temperatur', '']
-      },
-      options: {
-        responsive: true,
-        circumference: Math.PI,
-        rotation: -Math.PI,
-        cutout: '75%',
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return context.label + ': ' + context.raw + '°C';
-               }
-            }
-          }
+      private createTemperatureChart(temperature: number) {
+        const canvas: any = document.getElementById('temperatureCanvas');
+        if (canvas.getContext) {
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+    
+            // Hintergrundfarbe
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, width, height);
+    
+            // Farbverlauf erstellen
+            const gradient = ctx.createLinearGradient(0, 0, width, 0);
+            gradient.addColorStop(0, '#FF0000');
+            gradient.addColorStop(0.33, '#FFFF00');
+            gradient.addColorStop(0.66, '#00FF00');
+            gradient.addColorStop(1, '#FF0000');
+    
+            // Farbverlauf anwenden
+            ctx.fillStyle = gradient;
+            ctx.fillRect(10, height / 2 - 15, width - 20, 30);
+    
+            // Temperaturpunkt zeichnen
+            const tempPosition = (temperature / 40) * (width - 20) + 10;
+            ctx.beginPath();
+            ctx.arc(tempPosition, height / 2, 10, 0, 2 * Math.PI);
+            ctx.fillStyle = '#000000';
+            ctx.fill();
+    
+            // Text für die Temperaturmarkierungen hinzufügen
+            ctx.fillStyle = '#000000';
+            ctx.font = '16px Arial';
+            ctx.fillText('0°C', 10, height / 2 + 40);
+            ctx.fillText('15°C', (width - 20) * 0.375 + 10, height / 2 + 40);
+            ctx.fillText('25°C', (width - 20) * 0.625 + 10, height / 2 + 40);
+            ctx.fillText('40°C', width - 40, height / 2 + 40);
         }
-      }
-    });
-  }
+    }
 
-  private createBatteryChart(battery: number) {
+  private createBatteryChart(batteryData: number[]) {
     if (this.batteryChart) {
-      this.batteryChart.destroy();
+        this.batteryChart.destroy();
     }
+
     this.batteryChart = new Chart('batteryChart', {
-      type: 'doughnut',
-      data: {
-        datasets: [{
-          data: [battery, 100 - battery],
-          backgroundColor: ['#66BB6A', '#E0E0E0'],
-          hoverBackgroundColor: ['#66BB6A', '#E0E0E0'],
-          borderWidth: 1
-        }],
-        labels: ['Batterie', '']
+        type: 'bar',
+        data: {
+//Prüfen, wie die Batterie vor 15 Tagen war, da ich in den letzten Tagen nur eine schwache Batterie erhalte
+          //    labels: Array.from({ length: 15}, (_, i) => `Tag ${i + 1}`),
+            labels: ['Tag 1', 'Tag 2', 'Tag 3', 'Tag 4', 'Tag 5'],
+            datasets: [{
+                data: batteryData,
+                backgroundColor: batteryData.map(value => {
+                    if (value > 60) {
+                        return '#66BB6A'; // Grün für Normal
+                    } else if (value > 20) {
+                        return '#FFEB3B'; // Gelb für Mittel
+                    } else {
+                        return '#FF5252'; // Rot für Kritisch
+                    }
+                }),
+                borderColor: '#E0E0E0',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        stepSize: 20, //Y-Achse in 20er Schritten
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Tag ' + (context.dataIndex + 1) + ': ' + context.raw + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+private createHumidityChart(humidity: number) {
+  if (this.humidityChart) {
+    this.humidityChart.destroy();
+  }
+
+  this.humidityChart = new Chart('humidityChart', {
+    type: 'bar',
+    data: {
+      labels: ['< 30 %', '30 % - 70 %', '> 70 %'],
+      datasets: [{
+        data: [
+          humidity < 30 ? humidity : 0,
+          humidity >= 30 && humidity <= 70 ? humidity : 0,
+          humidity > 70 ? humidity : 0
+        ],
+        backgroundColor: [
+          humidity < 30 ? '#FF0000' : '#EEEEEE',
+          humidity >= 30 && humidity <= 70 ? '#00FF00' : '#EEEEEE',
+          humidity > 70 ? '#FF0000' : '#EEEEEE'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      indexAxis: 'y',
+      scales: {
+        x: {
+          beginAtZero: true,
+          display: false
+        },
+        y: {
+          beginAtZero: true,
+          grid: {
+            display: false
+          }
+        }
       },
-      options: {
-        responsive: true,
-        circumference: Math.PI,
-        rotation: -Math.PI,
-        cutout: '75%',
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return context.label + ': ' + context.raw + '%';
-              }
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return `${context.raw} %`;
             }
           }
         }
       }
+    }
+  });
+}
+  private calculateAndDisplayCorrelations(temperatureValues: number[], humidityValues: number[]) {
+    // Berechne die Lags (Verzögerungen) für die letzten fünf Tage
+    const lagDays = 5;
+    const temperatureLags = Array.from({ length: lagDays }, (_, i) => temperatureValues.slice(i, temperatureValues.length - lagDays + i));
+    const humidityLags = Array.from({ length: lagDays }, (_, i) => humidityValues.slice(i, humidityValues.length - lagDays + i));
+
+    // Berechne die Korrelationen
+    const correlations = temperatureLags.map((lag, i) => {
+      return this.calculateCorrelation(lag, humidityValues.slice(lagDays));
     });
+
+    // Erstelle das Korrelationen-Diagramm
+    this.createCorrelationChart(correlations);
   }
 
-  private createHumidityChart(humidity: number) {
-    if (this.humidityChart) {
-      this.humidityChart.destroy();
+  private calculateCorrelation(arr1: number[], arr2: number[]): number {
+    const n = arr1.length;
+    const mean1 = arr1.reduce((a, b) => a + b, 0) / n;
+    const mean2 = arr2.reduce((a, b) => a + b, 0) / n;
+    const numerator = arr1.reduce((sum, val, i) => sum + (val - mean1) * (arr2[i] - mean2), 0);
+    const denominator = Math.sqrt(arr1.reduce((sum, val) => sum + (val - mean1) ** 2, 0) * arr2.reduce((sum, val) => sum + (val - mean2) ** 2, 0));
+    return numerator / denominator;
+  }
+
+  private createCorrelationChart(correlations: number[]) {
+    if (this.correlationChart) {
+      this.correlationChart.destroy();
     }
-    this.humidityChart = new Chart('humidityChart', {
+    this.correlationChart = new Chart('correlationChart', {
       type: 'bar',
       data: {
-        labels: ['<30%', '30-70%', '>70%'],
+        labels: ['Tag -1', 'Tag -2', 'Tag -3', 'Tag -4', 'Tag -5'],
         datasets: [{
-          data: [humidity < 30 ? humidity : 0, humidity >= 30 && humidity <= 70 ? humidity : 0, humidity > 70 ? humidity : 0],
-          backgroundColor: ['#FF7043', '#66BB6A', '#FF7043'],
+          data: correlations,
+          backgroundColor: '#66BB6A',
           borderWidth: 1
         }]
       },
@@ -249,135 +314,22 @@ constructor(private http: HttpClient){
             beginAtZero: true
           },
           y: {
-            beginAtZero: true
+            beginAtZero: true,
+            max: 1,
+            min: -1
           }
         },
         plugins: {
           tooltip: {
             callbacks: {
               label: function(context) {
-                return `Feuchtigkeit: ${context.raw}% um ${context.label}`;
+                return `Korrelation: ${(context.raw as number).toFixed(2)}`;
               }
             }
           }
         }
       }
     });
-  }
-
-  /**
-  generateAndProcessFakeWeatherData() {
-    const currentData = this.generateAndProcessFakeWeatherData();
-    const forecastData = this.generateFakeWeatherForecast();
-    this.createTrendChart(currentData, forecastData);
-  }
-     */
-
-  private initializeCharts() {
-    const currentData = this.generateAndProcessFakeWeatherData();
-    const forecastData = this.generateFakeWeatherForecast();
-
-    console.log('Current Data:', currentData); // Debugging-Ausgabe
-    console.log('Forecast Data:', forecastData); // Debugging-Ausgabe
-
-    this.createTrendChart(currentData, forecastData);
-}
-
-
-private createTrendChart(currentData: { timestamps: any[], temperatureValues: any[], humidityValues: any[] }, forecastData: { forecastTimestamps: string[], forecastTemperatureValues: number[], forecastHumidityValues: number[] }) {
-  console.log('Initializing Trend Chart...'); // Debugging-Ausgabe
-
-  if (this.trendChart) {
-      this.trendChart.destroy();
-  }
-  const { timestamps, temperatureValues, humidityValues } = currentData;
-  const { forecastTimestamps, forecastTemperatureValues, forecastHumidityValues } = forecastData;
-
-  this.trendChart = new Chart('trendChart', {
-      type: 'line',
-      data: {
-          labels: [...timestamps, ...forecastTimestamps],
-          datasets: [
-              {
-                  label: 'Current Temperature (°C)',
-                  data: [...temperatureValues, ...Array(forecastTemperatureValues.length).fill(null)],
-                  backgroundColor: 'rgba(255, 112, 67, 0.5)',
-                  borderColor: 'rgba(255, 112, 67, 1)',
-                  borderWidth: 2,
-                  fill: true
-              },
-              {
-                  label: 'Current Humidity (%)',
-                  data: [...humidityValues, ...Array(forecastHumidityValues.length).fill(null)],
-                  backgroundColor: 'rgba(102, 187, 255, 0.5)',
-                  borderColor: 'rgba(102, 187, 255, 1)',
-                  borderWidth: 2,
-                  fill: true
-              },
-              {
-                  label: 'Forecast Temperature (°C)',
-                  data: [...Array(temperatureValues.length).fill(null), ...forecastTemperatureValues],
-                  backgroundColor: 'rgba(255, 112, 67, 0.2)',
-                  borderColor: 'rgba(255, 112, 67, 0.7)',
-                  borderDash: [5, 5],
-                  borderWidth: 2,
-                  fill: true
-              },
-              {
-                  label: 'Forecast Humidity (%)',
-                  data: [...Array(humidityValues.length).fill(null), ...forecastHumidityValues],
-                  backgroundColor: 'rgba(102, 187, 255, 0.2)',
-                  borderColor: 'rgba(102, 187, 255, 0.7)',
-                  borderDash: [5, 5],
-                  borderWidth: 2,
-                  fill: true
-              }
-          ]
-      },
-      options: {
-          responsive: true,
-          plugins: {
-              legend: {
-                  display: true,
-                  position: 'top',
-              },
-              tooltip: {
-                  callbacks: {
-                      label: function(context: any) {
-                          return context.dataset.label + ': ' + context.raw;
-                      }
-                  }
-              }
-          },
-          scales: {
-              x: {
-                  beginAtZero: true,
-                  title: {
-                      display: true,
-                      text: 'Time'
-                  }
-              },
-              y: {
-                  beginAtZero: true,
-                  title: {
-                      display: true,
-                      text: 'Values'
-                  }
-              }
-          }
-      }
-  });
-
-  console.log('Trend Chart Initialized'); // Debugging-Ausgabe
-}
-
-  checkExtremeWeather(temperatureValues: number[], humidityValues: number[]): boolean {
-    // Beispiel: Überprüfen, ob die Temperatur über 35°C oder unter 0°C liegt
-    const extremeTemperature = temperatureValues.some(temp => temp > 35 || temp < 0);
-    // Beispiel: Überprüfen, ob die Luftfeuchtigkeit über 80% oder unter 20% liegt
-    const extremeHumidity = humidityValues.some(humidity => humidity > 80 || humidity < 20);
-
-    return extremeTemperature || extremeHumidity;
   }
 
   public showDetails(type: string) {

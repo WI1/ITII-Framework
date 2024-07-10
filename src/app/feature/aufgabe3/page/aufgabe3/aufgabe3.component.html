@@ -7,8 +7,15 @@ Die technische Umsetzung beinhaltet die Entwicklung einer Weboberfläche zur Ech
 <h1> Sensordaten - FAUTOSmart </h1>
 <div class="charts-container">
   <div id="temperatureContainer" class="chart-container" (click)="showDetails('temperature')">
-    <canvas id="temperatureChart"></canvas>
+    <canvas id="temperatureCanvas" width="400" height="100"></canvas>
     <div *ngIf="alerts['temperature']" class="alert">
+      <i class="material-icons">warning</i>
+    </div>
+  </div>
+  <div class="chart-container humidity-chart-container">
+    <h2>Luftfeuchtigkeit</h2>
+    <canvas id="humidityChart"></canvas>
+    <div *ngIf="alerts['humidity']" class="alert">
       <i class="material-icons">warning</i>
     </div>
   </div>
@@ -18,12 +25,10 @@ Die technische Umsetzung beinhaltet die Entwicklung einer Weboberfläche zur Ech
       <i class="material-icons">warning</i>
     </div>
   </div>
-  <div id="humidityContainer" class="chart-container" (click)="showDetails('humidity')">
-    <canvas id="humidityChart"></canvas>
-    <div *ngIf="alerts['humidity']" class="alert">
-      <i class="material-icons">warning</i>
-    </div>
-  </div>
+
+
+</div>
+<div class="ContainerTrendChart">
   <div id="trendContainer" class="chart-container" (click)="showDetails('trend')">
     <canvas id="trendChart"></canvas>
     <div *ngIf="alerts['trend']" class="alert">
