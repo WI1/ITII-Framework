@@ -1,0 +1,17 @@
+<h2 mat-dialog-title> Benachrichtigung </h2>
+<mat-dialog-content>
+  <div class="message">
+    @for(alert of data.alerts; track alert) {
+        <p> 
+            <span class="bold"> {{ processAlert(alert) }} </span> 
+            {{ message }}
+         </p>
+    }
+    @empty {
+        <p> Keine Benachrichtigungen </p>
+    }
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Schließen</button>
+</mat-dialog-actions>

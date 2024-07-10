@@ -9,11 +9,13 @@ import {
   withInterceptors,
 } from '@angular/common/http';
 import { apiInterceptor } from './shared/interceptors/api.interceptor';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideAnimationsAsync(),
     provideHttpClient(withFetch(), withInterceptors([apiInterceptor])),
+    provideCharts(withDefaultRegisterables())
   ],
 };

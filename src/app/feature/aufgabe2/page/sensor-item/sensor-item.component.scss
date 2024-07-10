@@ -1,0 +1,112 @@
+$color-primary: #ff8000;
+$color-green: #4CAF50;
+$color-red: #F44336;
+
+.main {
+  border-radius: 30px; 
+  overflow: hidden; 
+  background-color: white;
+  filter: drop-shadow(0px 0px 5px lightgrey);
+  height: 230px; 
+  display: flex; 
+  flex-direction: column;
+
+  .heading {
+    background-color: $color-primary; 
+    color: white; 
+    padding: 10px 20px 8px 20px;
+    
+    h2 {
+        margin: 0;
+    }
+  }
+
+  .content {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    flex-direction: column;
+    height: 100%; 
+    width: 100%;
+
+    .figure {
+      display: flex;
+      align-self: center;
+      justify-content: center;
+      align-items: center;
+      width: 50%;
+      height: 100%;
+
+      .outer-circle {
+        position: relative;
+        width: 200px;
+        height: 100px;
+        border-top-left-radius: 100px;
+        border-top-right-radius: 100px;
+        background-color: #f7ca9c;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+
+        .inner-circle {
+          position: absolute;
+          width: 150px; 
+          height: 78px; 
+          border-top-left-radius: 80px; 
+          border-top-right-radius: 80px;
+          background-color: white;
+          display: flex;
+          justify-content: center;
+          align-items: flex-end;
+          color: black;
+          font-weight: normal;
+          bottom: 0; 
+
+          .arrow-svg {
+            position: absolute;
+            width: 100%;
+            height: 105%;
+
+            .arrow {
+              stroke: orange;
+              stroke-width: 2;
+            }
+
+            .semi-circle {
+              fill: none;
+              stroke: #ccc;
+              stroke-width: 2;
+            }
+          }
+        }
+      }
+    }
+
+    .data {
+      text-align: center;
+      width: 100%;
+      height: 50%;
+      display: flex;
+      flex-wrap: nowrap;
+
+      .spacing {
+        flex-grow: 0.5;
+      }
+
+      .value {
+        font-weight: normal;
+        font-size: xxx-large;
+      }
+
+      .description {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        .name {
+          margin: 0;
+        }
+      }
+    }
+  }
+}
