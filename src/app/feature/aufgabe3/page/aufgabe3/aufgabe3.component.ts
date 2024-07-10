@@ -391,7 +391,7 @@ private createHumidityChart(humidity: number) {
     if (this.alerts[type]) {
       const messages: { [key: string]: string } = {
         temperature: 'Warnung! - Temperatur \n Es wurden kritische Werte für die Temperatur im Lager überschritten. \n Optimaler Bereich: 15 °C bis 25 °C \n Bitte handeln Sie umgehend, um die Qualität der gelagerten Autotüren zu sichern!',
-        battery: 'Warnung! - Batteriestatus Febris \n Es wurden kritische Werte für die Batterie "Febris" im Lager überschritten. \n Aktueller Batteriestatus weniger als 10% \n Bitte ergreifen Sie sofort Maßnahmen, um die Funktionsfähigkeit der Sensoren zu sichern!',
+        battery: 'Warnung! - Batteriestatus Febris \n Es wurden kritische Werte für die Batterie "Febris" im Lager überschritten. \n Aktueller Batteriestatus weniger als 15% \n Bitte ergreifen Sie sofort Maßnahmen, um die Funktionsfähigkeit der Sensoren zu sichern!',
         humidity: 'Warnung! - Luftfeuchtigkeit \n Es wurden kritische Werte für die Luftfeuchtigkeit im Lager überschritten. \n Optimaler Bereich: 40 % bis 60 % \n Bitte handeln Sie umgehend, um die Qualität der gelagerten Autotüren zu sichern!',
         trend: 'Ein Alarm wurde ausgelöst. Bitte überprüfen Sie die spezifischen Alarmmeldungen für weitere Details.'
       };
