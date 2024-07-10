@@ -1,36 +1,53 @@
-// Hier werden spezifische Designregeln für die Aufgabe3-Seite gesetzt
+.charts-container {
+  display: flex;
+  justify-content: space-between;
+}
 
-/* Grundlegendes Styling für den Container */
 .chart-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    margin: 20px;
-  }
-  
-  /* Styling für den Titel des Diagramms */
-  h1 {
-    font-size: 24px;
-    margin-bottom: 10px;
-    text-align: center;
-    color: #333;
-  }
-  
-  /* Styling für das Canvas-Element des Diagramms */
-  canvas {
-    max-width: 100%;
-    height: auto;
-  }
-  
-  /* Styling für JSON-Ausgabe (falls benötigt) */
-  .json-output {
-    font-family: monospace;
-    background-color: #f5f5f5;
-    padding: 10px;
-    border-radius: 5px;
-    overflow-x: auto;
-    max-height: 300px;
-    margin: 20px 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
+  flex: 1;
+  margin: 0 10px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative; /* Ensure the alerts are positioned correctly */
+}
+
+.alert {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: red;
+  font-size: 24px;
+}
+
+.alert .material-icons {
+  vertical-align: middle;
+}
+
+.chart-container.alert-active {
+  border-color: red;
+}
+
+canvas {
+  max-width: 100%;
+  width: 100%; /* Ensure canvas fills the container */
+  height: 300px; /* Set a specific height for better visibility */
+}
+
+/* Zusätzlicher Containerstil für alle Diagramme */
+.chart-container {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 10px;
+}
+
+.chart-container h2 {
+  margin-bottom: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333333;
+}

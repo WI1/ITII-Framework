@@ -4,60 +4,30 @@ Dies erfordert eine kontinuierliche Überwachung der relevanten Parameter.<br>
 Die technische Umsetzung beinhaltet die Entwicklung einer Weboberfläche zur Echtzeitüberwachung und Trendanalyse der Sensordaten in der Logistik.</p>
 <hr>
 
-<h1> Sensordaten </h1>
-<p>{{getJsonValue | json}}</p>
-<!--<div style="display: block;">-->
-  <canvas id="myChart"></canvas>
-<!--</div>-->
-
-<!-- Ab hier könnt ihr gerne euren Code einfügen, viel Spaß! -->
-<!--
-<br>
-<p>Your code goes here...test</p>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h2>test</h2>
-    <h3>test1</h3>
-    <button class="clicked">test knopf</button>
-</body>
-</html>
-
-<nav>
-  <ul>
-    <li><a routerLink="/dashboard">Dashboard</a></li>
-    <li><a routerLink="/quality-checks">Qualitätprüfungen</a></li>
-    <li><a routerLink="/product-list">Warenverzeichnis</a></li>
-    <li><a routerLink="/reports">Berichte</a></li>
-    <li><a routerLink="/settings">Einstellungen</a></li>
-    <li><a routerLink="/user-management">Benutzerverwaltung</a></li>
-  </ul>
-</nav>
-
-<div class="container">
-  <router-outlet></router-outlet>
-</div>
-
-<div>
-    <h1>Qualitätsüberprüfungen</h1>
-    <div *ngIf="sensorData">
-      <div *ngFor="let sensor of sensorData | keyvalue">
-        <div class="sensor-card">
-          <h2>{{ sensor.key }}</h2>
-          <div class="sensor-value">
-            <pre>{{ sensor.value | json }}</pre>
-          </div>
-        </div>
-      </div>
+<h1> Sensordaten - FAUTOSmart </h1>
+<div class="charts-container">
+  <div id="temperatureContainer" class="chart-container" (click)="showDetails('temperature')">
+    <canvas id="temperatureChart"></canvas>
+    <div *ngIf="alerts['temperature']" class="alert">
+      <i class="material-icons">warning</i>
     </div>
-  <div *ngIf="sensorData && (sensorData | keyvalue).length === 0">
-    <p>Keine Sensordaten verfügbar/p>
+  </div>
+  <div id="batteryContainer" class="chart-container" (click)="showDetails('battery')">
+    <canvas id="batteryChart"></canvas>
+    <div *ngIf="alerts['battery']" class="alert">
+      <i class="material-icons">warning</i>
+    </div>
+  </div>
+  <div id="humidityContainer" class="chart-container" (click)="showDetails('humidity')">
+    <canvas id="humidityChart"></canvas>
+    <div *ngIf="alerts['humidity']" class="alert">
+      <i class="material-icons">warning</i>
+    </div>
+  </div>
+  <div id="trendContainer" class="chart-container" (click)="showDetails('trend')">
+    <canvas id="trendChart"></canvas>
+    <div *ngIf="alerts['trend']" class="alert">
+      <i class="material-icons">warning</i>
+    </div>
   </div>
 </div>
--->

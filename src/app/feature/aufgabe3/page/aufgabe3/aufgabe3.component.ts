@@ -11,7 +11,6 @@ import { MatCardModule } from '@angular/material/card';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
-//für die Charts
 import { Chart, registerables } from 'chart.js';
 
 @Component({
@@ -20,21 +19,23 @@ import { Chart, registerables } from 'chart.js';
   imports: [CommonModule, RouterLink, MatCardModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './aufgabe3.component.html',
-  //styleUrls? -> styleUrls: ['./aufgabe3.component.scss'], 
-  styleUrl: './aufgabe3.component.scss',
+ styleUrls: ['./aufgabe3.component.scss'],
+ // styleUrls: './aufgabe3.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-//M: implements OnInit habe ich hinzugefügt
 export class Aufgabe3Component implements OnInit {
- //M: hab ich ausgeklammert, war bereits gestanden
- // constructor(public history: Aufgabe3Service) {}
-
-  // Hier werden später die Funktionen für die History Seite der Anwendung stehen
-//sensorData:  any;
-
-public getJsonValue: any;
-public postJsonValue: any;
-private chart: any;
+  public getJsonValue: any;
+  public alerts: { [key: string]: boolean } = {
+    temperature: false,
+    battery: false,
+    humidity: false,
+    trend: false,
+    weather: false
+};
+private temperaturChart: any;
+private batteryChart: any;
+private humidityChart: any;
+private trendChart: any;
 
 constructor(private http: HttpClient){
   Chart.register(...registerables);
@@ -42,6 +43,9 @@ constructor(private http: HttpClient){
 
   ngOnInit(): void {
     this.getMethod();
+    //this.generateAndProcessFakeWeatherData();
+    //this.generateFakeWeatherForecast();
+    this.initializeCharts();
   }
 
   public getMethod() {
@@ -50,9 +54,6 @@ constructor(private http: HttpClient){
     const params = new HttpParams().set('key', apiKey).set('topic', topic);
     const url = 'https://it2.ecosystem-tools.de/php/get-data';
     
-    console.log('Sende GET-Anfrage an:', url);
-    console.log('Mit Parametern:', params.toString());
-
     this.http.get(url, { params }).subscribe((data) => {
       console.log('Erhaltene Daten:', data);
       this.getJsonValue = data;
@@ -62,7 +63,7 @@ constructor(private http: HttpClient){
     console.error('Fehler bei der GET-Anfrage', error);
   }
   );
-  }
+}
 
   private updateChartData(data: any){
     const timestamps = data.map((item: any) => new Date(item.baseStations[0]?.rxTime / 1e6).toLocaleTimeString());
@@ -72,210 +73,324 @@ constructor(private http: HttpClient){
     const humidityValues = data.map((item: any) => item.components?.humidity?.value ?? 0);
     const batteryValues = data.map((item: any) => item.components?.battery?.value ?? 0);
     const alarmStatusValues = data.map((item: any) => item.components?.alarm?.value ?? 0);
+    
+    
+    // Überprüfen der Qualitätskriterien und Auslösen von Alarme
+    this.checkQualityCriteria(temperatureValues, humidityValues, batteryValues, alarmStatusValues);
 
-    const tempQualityCriteria = temperatureValues.map((temp: number) => temp >= 10 && temp <= 30 ? 1 : 0);
-    const humidityQualityCriteria = humidityValues.map((humidity: number) => humidity >= 40 && humidity <= 60 ? 1 : 0);
+    //Thermometer-Anzeige
+    const temperature = temperatureValues[temperatureValues.length - 1];
+    this.createTemperatureChart(temperature);
 
-    if (this.chart) {
-      this.chart.destroy();
+        //Batteriestatus
+    const battery = batteryValues[batteryValues.length -1];
+        this.createBatteryChart(battery);
+
+            //Luftfeuchtigkeit
+    const humidity = humidityValues[humidityValues.length -1];
+    this.createHumidityChart(humidity);
+
+        //Trendanalyse
+        const forecastData = this.generateAndProcessFakeWeatherData();
+        //rausgenommen wegen 2 Values
+        //this.createTrendChart(timestamps, temperatureValues, humidityValues, forecastData);
+        this.createTrendChart(timestamps, temperatureValues);
+
+         
+  }
+
+  private generateAndProcessFakeWeatherData(): { timestamps: any[], temperatureValues: any[], humidityValues: any[] } {
+    const data = this.getJsonValue; // Annahme: Hier sind die simulierten Wetterdaten oder von der API erhaltenen Daten
+  
+    const timestamps = data.map((item: any) => new Date(item.baseStations[0]?.rxTime / 1e6).toLocaleTimeString());
+    const temperatureValues = data.map((item: any) => item.components?.internal_temp?.value ?? 0);
+    const humidityValues = data.map((item: any) => item.components?.humidity?.value ?? 0);
+  
+    return { timestamps, temperatureValues, humidityValues };
+  }
+  
+  private generateFakeWeatherForecast(): { forecastTimestamps: string[], forecastTemperatureValues: number[], forecastHumidityValues: number[] } {
+    const forecastTimestamps: string[] = [];
+    const forecastTemperatureValues: number[] = [];
+    const forecastHumidityValues: number[] = [];
+  
+    for (let i = 1; i <= 5; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      forecastTimestamps.push(date.toISOString().split('T')[0]); // Datum im Format YYYY-MM-DD
+  
+      const fakeTemperature = Math.floor(Math.random() * 40); // Zufällige Temperatur zwischen 0 und 40°C
+      const fakeHumidity = Math.floor(Math.random() * 100); // Zufällige Luftfeuchtigkeit zwischen 0 und 100%
+  
+      forecastTemperatureValues.push(fakeTemperature);
+      forecastHumidityValues.push(fakeHumidity);
     }
+  
+    return { forecastTimestamps, forecastTemperatureValues, forecastHumidityValues };
+  }
+ 
+  private checkQualityCriteria(temperatureValues: number[], humidityValues: number[], batteryValues: number[], alarmStatusValues: number[]) {
+    const latestTemperature = temperatureValues[temperatureValues.length - 1];
+    const latestHumidity = humidityValues[humidityValues.length - 1];
+    const latestBattery = batteryValues[batteryValues.length - 1];
+    const latestAlarmStatus = alarmStatusValues[alarmStatusValues.length - 1];
 
-    this.chart = new Chart('myChart', {
-      type: 'line',
+        // Überprüfen der Temperatur
+        if (latestTemperature < 0 || latestTemperature > 40 || (latestTemperature < 15 || latestTemperature > 25)) {
+          this.triggerAlarm('temperature', 'Temperature out of range');
+        }
+    
+        // Überprüfen der Feuchtigkeit
+        if (latestHumidity < 30 || latestHumidity > 70 || (latestHumidity < 40 || latestHumidity > 60)) {
+          this.triggerAlarm('humidity', 'Humidity out of range');
+        }
+    
+        // Überprüfen der Batterie
+        if (latestBattery < 20) { // Beispielschwelle für niedrigen Batteriestatus
+          this.triggerAlarm('battery', 'Battery low');
+        }
+    
+        // Überprüfen des Alarmstatus
+        if (latestAlarmStatus > 0) { // Annahme, dass ein Alarmstatus > 0 einen Alarm darstellt
+          this.triggerAlarm('trend', 'Alarm status triggered');
+        }
+      }
+    
+      private triggerAlarm(key: string, message: string) {
+        // Hier können Sie die Logik für die Benachrichtigung hinzufügen, z.B. ein Popup, eine E-Mail oder eine Push-Benachrichtigung
+        this.alerts[key] = true;
+        console.warn(message); // Einfacher Alert als Beispiel
+      }
+    
+  private createTemperatureChart(temperature: number) {
+    if (this.temperaturChart) {
+      this.temperaturChart.destroy();
+    }
+    this.temperaturChart = new Chart('temperatureChart', {
+      type: 'doughnut',
       data: {
-        labels: timestamps,
-        datasets: [
-          {
-            data: temperatureValues,
-            label: 'Temperatur (°C)',
-            borderColor: '#FF7043',
-            fill: false
-          },
-          {
-            data: pressureValues,
-            label: 'Luftdruck (Pa)',
-            borderColor: '#42A5F5',
-            fill: false
-          },
-          {
-            data: co2Values,
-            label: 'CO2 (ppm)',
-            borderColor: '#66BB6A',
-            fill: false
-          },
-          {
-            data: humidityValues,
-            label: 'Feuchtigkeit (%)',
-            borderColor: '#FFA726',
-            fill: false
-          },
-          {
-            data: batteryValues,
-            label: 'Batterie (V)',
-            borderColor: '#8E24AA',
-            fill: false
-          },
-          {
-            data: alarmStatusValues,
-            label: 'Alarmstatus',
-            borderColor: '#D32F2F',
-            fill: false
-          },
-          {
-            data: tempQualityCriteria,
-            label: 'Temp Qualität',
-            borderColor: '#FF0000',
-            fill: false,
-            borderDash: [10, 5]
-          },
-          {
-            data: humidityQualityCriteria,
-            label: 'Feuchtigkeit Qualität',
-            borderColor: '#00FF00',
-            fill: false,
-            borderDash: [10, 5]
-          }
-        ]
+        datasets: [{
+          data: [temperature, 40 - temperature],
+          backgroundColor: ['#FF7043', '#E0E0E0'],
+          hoverBackgroundColor: ['#FF7043', '#E0E0E0'],
+          borderWidth: 1
+        }],
+        labels: ['Temperatur', '']
       },
       options: {
         responsive: true,
-        scales: {
-          x: {
-            type: 'category',
+        circumference: Math.PI,
+        rotation: -Math.PI,
+        cutout: '75%',
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.raw + '°C';
+               }
+            }
           }
         }
       }
     });
   }
-}
-/**
-  loadSensorData(): void {
-    const topics: { [key: string]: string} = {
-      temperatur: 'mioty/70-b3-d5-67-70-0e-ff-03/fc-a8-4a-03-00-00-0e-67/uplink',
-      druck: 'mioty/70-b3-d5-67-70-0e-ff-03/fc-a8-4a-01-00-00-10-ff/uplink',
-      co2: 'mioty/70-b3-d5-67-70-0e-ff-03/fc-a8-4a-03-00-00-0e-66/uplink',
-      feuchtigkeit: 'mioty/70-b3-d5-67-70-0e-ff-03/fc-a8-4a-03-00-00-0e-81/uplink'
-    };
 
-    for(const key in topics) {
-      if (Object.prototype.hasOwnProperty.call(topics, key)) {
-        this.aufgabe3Service.getSensorData(topics[key]).subscribe(data => {
-          console.log('Data for ${key}:', data );
-          this.sensorData[key] = data;
-        }, error => {
-          console.error('Error fetching data for ${key}:', console.error);
-        });
-      }
+  private createBatteryChart(battery: number) {
+    if (this.batteryChart) {
+      this.batteryChart.destroy();
     }
-  } 
+    this.batteryChart = new Chart('batteryChart', {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [battery, 100 - battery],
+          backgroundColor: ['#66BB6A', '#E0E0E0'],
+          hoverBackgroundColor: ['#66BB6A', '#E0E0E0'],
+          borderWidth: 1
+        }],
+        labels: ['Batterie', '']
+      },
+      options: {
+        responsive: true,
+        circumference: Math.PI,
+        rotation: -Math.PI,
+        cutout: '75%',
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.label + ': ' + context.raw + '%';
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  private createHumidityChart(humidity: number) {
+    if (this.humidityChart) {
+      this.humidityChart.destroy();
+    }
+    this.humidityChart = new Chart('humidityChart', {
+      type: 'bar',
+      data: {
+        labels: ['<30%', '30-70%', '>70%'],
+        datasets: [{
+          data: [humidity < 30 ? humidity : 0, humidity >= 30 && humidity <= 70 ? humidity : 0, humidity > 70 ? humidity : 0],
+          backgroundColor: ['#FF7043', '#66BB6A', '#FF7043'],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            beginAtZero: true
+          },
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `Feuchtigkeit: ${context.raw}% um ${context.label}`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  /**
+  generateAndProcessFakeWeatherData() {
+    const currentData = this.generateAndProcessFakeWeatherData();
+    const forecastData = this.generateFakeWeatherForecast();
+    this.createTrendChart(currentData, forecastData);
+  }
+     */
+
+  private initializeCharts() {
+    const currentData = this.generateAndProcessFakeWeatherData();
+    const forecastData = this.generateFakeWeatherForecast();
+
+    console.log('Current Data:', currentData); // Debugging-Ausgabe
+    console.log('Forecast Data:', forecastData); // Debugging-Ausgabe
+
+    this.createTrendChart(currentData, forecastData);
 }
 
-//Dashboard Komponente
-@Component({
-  selector: 'app-dashboard',
-  template: `
-  <div class="dashboard">
-    <div class="widget sensor-card">
-      <h2>Aktuelle Prüfungen</h2>
-      <p>Anzahl der derzeit durchführten Qualitätsüberprüfungen: 5</p>
-    </div>
-    <div class="widget sensor-card">
-      <h2>Ergebnisse</h2>
-      <p>Bestanden: 10, Nicht-bestanden: 2</p>
-    </div>
-    <div class="widget sensor-card">
-      <h2>Warnungen</h2>
-      <p>Es gibt 3 potenzielle Probleme oder Qualitätabweichungen</p>
-    </div>
-    <div class="widget sensor-card">
-      <h2>Statistiken</h2>
-      <!-- hier Diagramme und Grafiken hinzufügen -->
-      <p>Diagramme und Grafiken zur Visualisierung der Qaulitätskennzahlen</p>
-    </div>
-  </div>
-`,
-  styleUrls: ['./aufgabe3.component.scss']
-})
-export class DashboardComponent{}
 
-//Qualitätsprüfungen-Komponente
-@Component({
-  selector: 'app-quality-checks',
-  template: `
-    <div class="quality-checks">
-      <h2>Qualitätprüfungen</h2>
-      <ul>
-        <li *ngFor="let item of qualityCheckList">
-          <h3>{{ item.warenBeschreibung }}</h3>
-          <p>ID: {{ item.warenID}}</p>
-          <p>Status: {{ item.status }}</p>
-          <p>Pruefergebnisse: {{ item.pruefergebnisse }}</p>
-        </li>
-      </ul>
-    </div>
-  `,
-  styleUrls: ['./aufgabe3.component.scss']
-})
-export class QualityChecksComponent implements OnInit {
-  qualityCheckList = [
-    { warenId: '001', warenBeschreibung: 'Produkt A', status: 'In Bearbeitung', prüfergebnisse: 'Bestanden' },
-    { warenId: '002', warenBeschreibung: 'Produkt B', status: 'Abgeschlossen', prüfergebnisse: 'Nicht-bestanden' }
-  ];
+private createTrendChart(currentData: { timestamps: any[], temperatureValues: any[], humidityValues: any[] }, forecastData: { forecastTimestamps: string[], forecastTemperatureValues: number[], forecastHumidityValues: number[] }) {
+  console.log('Initializing Trend Chart...'); // Debugging-Ausgabe
 
-  constructor() {}
+  if (this.trendChart) {
+      this.trendChart.destroy();
+  }
+  const { timestamps, temperatureValues, humidityValues } = currentData;
+  const { forecastTimestamps, forecastTemperatureValues, forecastHumidityValues } = forecastData;
 
-  ngOnInit(): void {}
+  this.trendChart = new Chart('trendChart', {
+      type: 'line',
+      data: {
+          labels: [...timestamps, ...forecastTimestamps],
+          datasets: [
+              {
+                  label: 'Current Temperature (°C)',
+                  data: [...temperatureValues, ...Array(forecastTemperatureValues.length).fill(null)],
+                  backgroundColor: 'rgba(255, 112, 67, 0.5)',
+                  borderColor: 'rgba(255, 112, 67, 1)',
+                  borderWidth: 2,
+                  fill: true
+              },
+              {
+                  label: 'Current Humidity (%)',
+                  data: [...humidityValues, ...Array(forecastHumidityValues.length).fill(null)],
+                  backgroundColor: 'rgba(102, 187, 255, 0.5)',
+                  borderColor: 'rgba(102, 187, 255, 1)',
+                  borderWidth: 2,
+                  fill: true
+              },
+              {
+                  label: 'Forecast Temperature (°C)',
+                  data: [...Array(temperatureValues.length).fill(null), ...forecastTemperatureValues],
+                  backgroundColor: 'rgba(255, 112, 67, 0.2)',
+                  borderColor: 'rgba(255, 112, 67, 0.7)',
+                  borderDash: [5, 5],
+                  borderWidth: 2,
+                  fill: true
+              },
+              {
+                  label: 'Forecast Humidity (%)',
+                  data: [...Array(humidityValues.length).fill(null), ...forecastHumidityValues],
+                  backgroundColor: 'rgba(102, 187, 255, 0.2)',
+                  borderColor: 'rgba(102, 187, 255, 0.7)',
+                  borderDash: [5, 5],
+                  borderWidth: 2,
+                  fill: true
+              }
+          ]
+      },
+      options: {
+          responsive: true,
+          plugins: {
+              legend: {
+                  display: true,
+                  position: 'top',
+              },
+              tooltip: {
+                  callbacks: {
+                      label: function(context: any) {
+                          return context.dataset.label + ': ' + context.raw;
+                      }
+                  }
+              }
+          },
+          scales: {
+              x: {
+                  beginAtZero: true,
+                  title: {
+                      display: true,
+                      text: 'Time'
+                  }
+              },
+              y: {
+                  beginAtZero: true,
+                  title: {
+                      display: true,
+                      text: 'Values'
+                  }
+              }
+          }
+      }
+  });
+
+  console.log('Trend Chart Initialized'); // Debugging-Ausgabe
 }
 
-// Warenverzeichnis-Komponente
-@Component({
-  selector: 'app-product-list',
-  template: `
-    <div class="product-list">
-      <h2>Warenverzeichnis</h2>
-      <!-- Warenliste und Such- und Filterfunktionen hier -->
-    </div>
-  `,
-  styleUrls: ['./aufgabe3.component.scss']
-})
-export class ProductListComponent {}
+  checkExtremeWeather(temperatureValues: number[], humidityValues: number[]): boolean {
+    // Beispiel: Überprüfen, ob die Temperatur über 35°C oder unter 0°C liegt
+    const extremeTemperature = temperatureValues.some(temp => temp > 35 || temp < 0);
+    // Beispiel: Überprüfen, ob die Luftfeuchtigkeit über 80% oder unter 20% liegt
+    const extremeHumidity = humidityValues.some(humidity => humidity > 80 || humidity < 20);
 
-// Berichte-Komponente
-@Component({
-  selector: 'app-reports',
-  template: `
-    <div class="reports">
-      <h2>Berichte</h2>
-      <!-- Berichtserstellung und Anzeige hier -->
-    </div>
-  `,
-  styleUrls: ['./aufgabe3.component.scss']
-})
-export class ReportsComponent {}
+    return extremeTemperature || extremeHumidity;
+  }
 
-// Einstellungen-Komponente
-@Component({
-  selector: 'app-settings',
-  template: `
-    <div class="settings">
-      <h2>Einstellungen</h2>
-      <!-- Einstellungen für Qualitätskriterien, Toleranzgrenzen und Benachrichtigungen hier -->
-    </div>
-  `,
-  styleUrls: ['./aufgabe3.component.scss']
-})
-export class SettingsComponent {}
+  public showDetails(type: string) {
+    if (this.alerts[type]) {
+      const messages: { [key: string]: string } = {
+        temperature: 'Die Temperatur liegt außerhalb des zulässigen Bereichs. Überprüfen Sie die Kühlung oder Heizung.',
+        battery: 'Der Batteriestand ist niedrig. Bitte ersetzen Sie die Batterie oder laden Sie das Gerät auf.',
+        humidity: 'Die Luftfeuchtigkeit liegt außerhalb des zulässigen Bereichs. Überprüfen Sie die Feuchtigkeitskontrolle.',
+        trend: 'Ein Alarm wurde ausgelöst. Bitte überprüfen Sie die spezifischen Alarmmeldungen für weitere Details.'
+      };
 
-// Benutzerverwaltung-Komponente
-@Component({
-  selector: 'app-user-management',
-  template: `
-    <div class="user-management">
-      <h2>Benutzerverwaltung</h2>
-      <!-- Benutzerliste, Rollen und Berechtigungen hier -->
-    </div>
-  `,
-  styleUrls: ['./aufgabe3.component.scss']
-})
-   */
-//export class UserManagementComponent {}
+      alert(messages[type]);
+    }
+  }
+}
+
