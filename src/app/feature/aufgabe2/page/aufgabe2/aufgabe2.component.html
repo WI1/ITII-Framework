@@ -1,4 +1,4 @@
-<h1>Aufgabe 2</h1>
+<h1>Aufgabe 2: Lager</h1>
 <p>Im Fokus steht die Verbesserung der Lagerqualität, da aktuell Produkte hohen Temperaturen und Feuchtigkeit ausgesetzt sind.<br>
 Die IT II GmbH soll eine Weboberfläche entwickeln, die Echtzeitdaten sowie historische Trends zu Temperatur, Feuchtigkeit<br>
 und anderen relevanten Faktoren im Lager visualisiert, um die Qualität zu überwachen und zu verbessern.</p>
@@ -7,4 +7,36 @@ und anderen relevanten Faktoren im Lager visualisiert, um die Qualität zu über
 <!-- Ab hier könnt ihr gerne euren Code einfügen, viel Spaß! -->
 
 <br>
-<p>Your code goes here...</p>
+<div class="main">
+    <div class="head">
+        <img [src]="logoUrl" alt="logo">
+        <div class="space"></div>
+        <h2> Dashboard  </h2>
+    </div>
+    <div class="results">
+        
+        @for(component of components; track component.key) {
+            @if(component.key !== 'alarmstatus') {
+                @if(component.key !== 'ul_counter') {
+                    <if-sensor-item 
+                    [key]="component.key" 
+                    [componentDetails]="component.value"
+                    [dayHistoryReadings]="get24HourHistory(component.key)"
+                    [weekHistoryReadings]="get7DayHistory(component.key)"
+                    (signalParent)="addAlert($event)">
+                </if-sensor-item>
+                }
+            }
+        }
+        @empty {
+            <p class="error"> Fehler beim Abrufen der Sensordaten! </p>
+        }
+
+    </div>
+    <div class="alert">
+        <button (click)="openAlert()" [ngStyle]="{'background-color': alerts().length > 0 ? '#ff0000' : '#f7ca9c'}">
+            <img class="icon" [src]="alertUrl" alt="alert">
+            <p> {{ alerts().length }} </p>
+        </button>
+    </div>
+</div>

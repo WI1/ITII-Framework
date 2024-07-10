@@ -1,0 +1,39 @@
+<h2 mat-dialog-title> {{ data.name }} </h2>
+<mat-dialog-content>
+  <div class="data">
+    <p>Mittelwert: {{ mean }}{{ unit }}</p>
+    <p>Höchster Wert: {{ highestValue }}{{ unit }}</p>
+    <p>Kleinster Wert: {{ smallestValue }}{{ unit }}</p>
+    <p>Grenzwert: {{ threshold }}</p>
+  </div>
+  <div class="graph-container">
+    <mat-form-field appearance="fill">
+      <mat-label>Zeitraum wählen</mat-label>
+      <mat-select [(value)]="selectedTimePeriod" (selectionChange)="updateChart()">
+        <mat-option value="day">Tag</mat-option>
+        <mat-option value="week">Woche</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <canvas class="canvas" baseChart
+        [data]="lineChartData" 
+        [options]="lineChartOptions" 
+        [type]="'line'"> 
+    </canvas>
+  </div>
+  <div class="input">
+    <input
+        class="sm-text-input"
+        placeholder="neuen Grenzwert eingeben"
+        #newValue
+        (keyup.enter)="changeThresholdValue(newValue.value); newValue.value = ''" />
+
+        <button class="btn" 
+            (click)="changeThresholdValue(newValue.value); newValue.value = ''">
+            
+            Speichern
+        </button>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close (click)="closeDialog()">Schließen</button>
+</mat-dialog-actions>
