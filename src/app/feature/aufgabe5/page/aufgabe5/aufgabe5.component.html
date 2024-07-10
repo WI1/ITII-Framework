@@ -6,5 +6,108 @@ Die technische Umsetzung umfasst die Entwicklung einer Weboberfläche zur Echtze
 
 <!-- Ab hier könnt ihr gerne euren Code einfügen, viel Spaß! -->
 
-<br>
-<p>Your code goes here...</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Aufgabe 5</title>
+  <link rel="stylesheet" href="aufgabe5.component.scss">
+</head>
+<body>
+  <div class="begrüßung">
+    <div>Guten Tag,</div>
+    <div class="name_bg">Christoph!</div>
+    <div>Willkommen auf dem FAUTOSmart Dashboard</div>
+  </div>
+    
+
+    <div class="containerStatusBericht">
+      <h2>Status Bericht</h2>
+        <div class="container1">
+          <div class="item1">Lager 1</div>
+          <div class="item1">Lager 2</div>
+          <div class="item1">Logistik</div>
+          <div class="item1">Schweißerei</div>
+        </div>
+
+        <div class="container2">
+          <div class="item2" id="item2-1"></div>
+          <div class="item2" id="item2-2"></div>
+          <div class="item2" id="item2-3"></div>
+          <div class="item2" id="item2-4"></div>
+        </div>
+
+        <div class="container3">
+          <button class="button_aufgabe" routerLink="/aufgabe1"> Bereich <br> anzeigen</button>
+          <button class="button_aufgabe" routerLink="/aufgabe2"> Bereich <br> anzeigen</button>
+          <button class="button_aufgabe" routerLink="/aufgabe3"> Bereich <br> anzeigen</button>
+          <button class="button_aufgabe" routerLink="/aufgabe4"> Bereich <br> anzeigen</button>
+        </div>
+        
+        <div>
+            <button class="buttonAlarm" (click)="toggleAlarm('item2-1')">Toggle Alarm 1</button>
+            <button class="buttonAlarm" (click)="toggleAlarm('item2-2')">Toggle Alarm 2</button>
+            <button class="buttonAlarm" (click)="toggleAlarm('item2-3')">Toggle Alarm 3</button>
+            <button class="buttonAlarm" (click)="toggleAlarm('item2-4')">Toggle Alarm 4</button>
+          </div>
+    </div>
+
+
+    <!-- Pop-up modal -->
+    <div id="myModal" class="popup-modal">
+      <div class="popup-content">
+        <span id="closePopup" class="close-button" (click)="hidePopup()">&times;</span>
+        <p class="popupText" id="popupText">Achtung</p>
+        <div class="popupText2" #alarmMessageContainer></div>
+      </div>
+    </div>
+
+    <h2>Fertigungsmonitor</h2>
+
+    <!-- Container für die Charts -->
+<div class="chart-container">
+  <div>
+    <h3>Soll und Ist Output</h3>
+    <canvas #productionChart></canvas>
+  </div>
+  <div>
+    <h3>Fehlerhäufigkeit an den letzten 5 Tagen</h3>
+    <canvas #errorChart></canvas>
+  </div>
+</div>
+
+
+
+<!-- Tabelle für abgeschlossene und offene Aufträge -->
+<div class="auftrags-liste">
+  <h3>Auftragsstatus</h3>
+  <div class="order-list">
+  <table>
+    <thead>
+      <tr>
+        <th>Auftragsnummer</th>
+        <th>Kundenname</th>
+        <th>Stückzahl Variante A</th>
+        <th>Stückzahl Variante B</th>
+        <th>Stückzahl Variante C</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let auftrag of auftragsliste">
+        <td>{{ auftrag.auftragsnummer }}</td>
+        <td>{{ auftrag.kundenname }}</td>
+        <td>{{ auftrag.stueckzahlA }}</td>
+        <td>{{ auftrag.stueckzahlB }}</td>
+        <td>{{ auftrag.stueckzahlC }}</td>
+        <td>{{ auftrag.status }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+
+
+</body>
+</html>
