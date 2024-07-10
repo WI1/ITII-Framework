@@ -26,10 +26,10 @@ export class Aufgabe5Component implements OnInit {
     stueckzahlC: number,
     status: string 
   }[] = [
-    { auftragsnummer: 1, kundenname: 'Audi AG', stueckzahlA: 100, stueckzahlB: 150, stueckzahlC: 120, status: 'Abgeschlossen' },
-    { auftragsnummer: 2, kundenname: 'BMW', stueckzahlA: 80, stueckzahlB: 100, stueckzahlC: 90, status: 'In Bearbeitung' },
-    { auftragsnummer: 3, kundenname: 'VW AG', stueckzahlA: 120, stueckzahlB: 130, stueckzahlC: 110, status: 'Offen' },
-    { auftragsnummer: 4, kundenname: 'Mercedes-Benz', stueckzahlA: 90, stueckzahlB: 110, stueckzahlC: 100, status: 'Offen' }
+    { auftragsnummer: 35513, kundenname: 'Audi AG', stueckzahlA: 100, stueckzahlB: 150, stueckzahlC: 120, status: 'Abgeschlossen' },
+    { auftragsnummer: 35514, kundenname: 'BMW', stueckzahlA: 80, stueckzahlB: 100, stueckzahlC: 90, status: 'In Bearbeitung' },
+    { auftragsnummer: 35515, kundenname: 'VW AG', stueckzahlA: 120, stueckzahlB: 130, stueckzahlC: 110, status: 'Offen' },
+    { auftragsnummer: 35516, kundenname: 'Mercedes-Benz', stueckzahlA: 90, stueckzahlB: 110, stueckzahlC: 100, status: 'Offen' }
   ];
 
   statuses: { id: string, alarm: boolean, name: string }[] = [
