@@ -6,6 +6,7 @@ Die technische Umsetzung beinhaltet die Entwicklung einer Weboberfläche zur Ech
 
 <h1> Sensordaten - FAUTOSmart </h1>
 <div class="charts-container">
+  <h2>Temperatur</h2>
   <div id="temperatureContainer" class="chart-container" (click)="showDetails('temperature')">
     <canvas id="temperatureCanvas" width="400" height="100"></canvas>
     <div *ngIf="alerts['temperature']" class="alert">
@@ -20,13 +21,12 @@ Die technische Umsetzung beinhaltet die Entwicklung einer Weboberfläche zur Ech
     </div>
   </div>
   <div id="batteryContainer" class="chart-container" (click)="showDetails('battery')">
+    <h2>Batteriestatus Febris</h2>
     <canvas id="batteryChart"></canvas>
     <div *ngIf="alerts['battery']" class="alert">
       <i class="material-icons">warning</i>
     </div>
   </div>
-
-
 </div>
 <div class="ContainerTrendChart">
   <div id="trendContainer" class="chart-container" (click)="showDetails('trend')">
@@ -35,4 +35,23 @@ Die technische Umsetzung beinhaltet die Entwicklung einer Weboberfläche zur Ech
       <i class="material-icons">warning</i>
     </div>
   </div>
+</div>
+
+<div class="charts-container h2">
+<div class="trend-charts">
+  <div class="trend-chart-container">
+    <h2>Trendanalyse - Temperatur</h2>
+    <canvas id="temperatureTrendChart" baseChart
+      [data]="plotChart('temperature')"
+      [type]="'line'">
+    </canvas>
+  </div>
+  <div class="trend-chart-container">
+    <h2>Trendanalyse - Luftfeuchtigkeit</h2>
+    <canvas id="humidityTrendChart" baseChart
+      [data]="plotChart('humidity')"
+      [type]="'line'">
+    </canvas>
+  </div>
+</div>
 </div>

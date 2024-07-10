@@ -11,12 +11,37 @@ import { MatCardModule } from '@angular/material/card';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Chart, registerables } from 'chart.js';
+import { Chart,  registerables, ChartOptions, ChartType, ChartData, ChartConfiguration } from 'chart.js';
+import { BaseChartDirective } from 'ng2-charts';
+
+interface WetterDienstApi {
+    temperature: number;
+    battery: number;
+    humidity: number;
+}
+
+const wetterDaten: WetterDienstApi[] = [
+    { temperature: 22.5, battery: 85, humidity: 45 },
+    { temperature: 18.2, battery: 90, humidity: 55 },
+    { temperature: 25.1, battery: 80, humidity: 35 },
+    { temperature: 30.0, battery: 75, humidity: 40 },
+    { temperature: 16.5, battery: 95, humidity: 60 },
+  //  { temperature: 20.3, battery: 88, humidity: 50 },
+  //  { temperature: 28.4, battery: 70, humidity: 30 },
+  //  { temperature: 19.7, battery: 92, humidity: 65 },
+  //  { temperature: 21.9, battery: 85, humidity: 55 },
+  //  { temperature: 17.6, battery: 89, humidity: 48 }
+];
+
+// Ausgabe der Dummy-Daten
+console.log(wetterDaten);
+
+
 
 @Component({
   selector: 'if-aufgabe3',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatCardModule],
+  imports: [CommonModule, RouterLink, MatCardModule, BaseChartDirective],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './aufgabe3.component.html',
  styleUrls: ['./aufgabe3.component.scss'],
@@ -34,6 +59,11 @@ private temperaturChart: any;
 private batteryChart: any;
 private humidityChart: any;
 private correlationChart: any;
+
+public trendChart: ChartConfiguration<'line'>['data'] = {
+  labels: [],
+  datasets: []
+};
 
 constructor(private http: HttpClient){
   Chart.register(...registerables);
@@ -169,8 +199,6 @@ constructor(private http: HttpClient){
     this.batteryChart = new Chart('batteryChart', {
         type: 'bar',
         data: {
-//Prüfen, wie die Batterie vor 15 Tagen war, da ich in den letzten Tagen nur eine schwache Batterie erhalte
-          //    labels: Array.from({ length: 15}, (_, i) => `Tag ${i + 1}`),
             labels: ['Tag 1', 'Tag 2', 'Tag 3', 'Tag 4', 'Tag 5'],
             datasets: [{
                 data: batteryData,
@@ -222,35 +250,32 @@ private createHumidityChart(humidity: number) {
   }
 
   this.humidityChart = new Chart('humidityChart', {
-    type: 'bar',
+    type: 'line',
     data: {
       labels: ['< 30 %', '30 % - 70 %', '> 70 %'],
       datasets: [{
         data: [
-          humidity < 30 ? humidity : 0,
-          humidity >= 30 && humidity <= 70 ? humidity : 0,
-          humidity > 70 ? humidity : 0
+          humidity < 30 ? humidity : null,
+          humidity >= 30 && humidity <= 70 ? humidity : null,
+          humidity > 70 ? humidity : null
         ],
-        backgroundColor: [
-          humidity < 30 ? '#FF0000' : '#EEEEEE',
-          humidity >= 30 && humidity <= 70 ? '#00FF00' : '#EEEEEE',
-          humidity > 70 ? '#FF0000' : '#EEEEEE'
-        ],
-        borderWidth: 1
+        backgroundColor: 'rgba(0, 123, 255, 0.5)',
+        borderColor: 'rgba(0, 123, 255, 1)',
+        fill: false,
+        tension: 0.1
       }]
     },
     options: {
       responsive: true,
-      indexAxis: 'y',
       scales: {
         x: {
           beginAtZero: true,
-          display: false
+          display: true
         },
         y: {
           beginAtZero: true,
           grid: {
-            display: false
+            display: true
           }
         }
       },
@@ -332,12 +357,42 @@ private createHumidityChart(humidity: number) {
     });
   }
 
+  createTrendChart (name: string, dataset: number[]) {
+    const labels = dataset.map((_: number, index: number) => `Tag ${index + 1}`);
+    return {
+      labels: labels,
+      datasets: [{
+        data: dataset, 
+        label: `Trend der nächsten 5 Tage für ${name}`,
+        fill: false,
+        tension: 0.5,
+        borderColor: 'black'
+         }]
+    }
+  }
+
+  plotChart(name: string) {
+    const len = wetterDaten.length;
+    let dataset: number[] = [];
+
+    for (let dataPoint of wetterDaten) {
+      if(name === 'humidity'){
+        dataset.push(dataPoint.humidity);
+      }
+      else {
+        dataset.push(dataPoint.temperature);
+      }
+    }
+
+    return this.createTrendChart(name, dataset)
+  }
+
   public showDetails(type: string) {
     if (this.alerts[type]) {
       const messages: { [key: string]: string } = {
-        temperature: 'Die Temperatur liegt außerhalb des zulässigen Bereichs. Überprüfen Sie die Kühlung oder Heizung.',
-        battery: 'Der Batteriestand ist niedrig. Bitte ersetzen Sie die Batterie oder laden Sie das Gerät auf.',
-        humidity: 'Die Luftfeuchtigkeit liegt außerhalb des zulässigen Bereichs. Überprüfen Sie die Feuchtigkeitskontrolle.',
+        temperature: 'Warnung! - Temperatur \n Es wurden kritische Werte für die Temperatur im Lager überschritten. \n Optimaler Bereich: 15 °C bis 25 °C \n Bitte handeln Sie umgehend, um die Qualität der gelagerten Autotüren zu sichern!',
+        battery: 'Warnung! - Batteriestatus Febris \n Es wurden kritische Werte für die Batterie "Febris" im Lager überschritten. \n Aktueller Batteriestatus weniger als 10% \n Bitte ergreifen Sie sofort Maßnahmen, um die Funktionsfähigkeit der Sensoren zu sichern!',
+        humidity: 'Warnung! - Luftfeuchtigkeit \n Es wurden kritische Werte für die Luftfeuchtigkeit im Lager überschritten. \n Optimaler Bereich: 40 % bis 60 % \n Bitte handeln Sie umgehend, um die Qualität der gelagerten Autotüren zu sichern!',
         trend: 'Ein Alarm wurde ausgelöst. Bitte überprüfen Sie die spezifischen Alarmmeldungen für weitere Details.'
       };
 

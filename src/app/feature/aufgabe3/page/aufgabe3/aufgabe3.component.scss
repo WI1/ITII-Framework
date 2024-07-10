@@ -33,7 +33,7 @@
 canvas {
   max-width: 100%;
   width: 100%; /* Ensure canvas fills the container */
-  height: 300px; /* Set a specific height for better visibility */
+  height: 150px; /* Set a specific height for better visibility */
 }
 
 /* Zusätzlicher Containerstil für alle Diagramme */
@@ -45,9 +45,31 @@ canvas {
   margin: 10px;
 }
 
+
+
 .chart-container h2 {
+  flex: 1;
   margin-bottom: 10px;
   font-size: 24px;
   font-weight: bold;
   color: #333333;
+
+  .trend-charts {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+  }
+  
+  .trend-chart-container {
+    width: 45%; /* Adjust the width of each trend chart container */
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+  }
+  
+  .trend-chart-container canvas {
+    width: 100%; /* Ensure canvas fills the container */
+    height: 150px; /* Adjust the height for smaller display */
+  }
 }
