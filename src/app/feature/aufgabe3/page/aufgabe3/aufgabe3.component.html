@@ -4,7 +4,54 @@ Dies erfordert eine kontinuierliche Überwachung der relevanten Parameter.<br>
 Die technische Umsetzung beinhaltet die Entwicklung einer Weboberfläche zur Echtzeitüberwachung und Trendanalyse der Sensordaten in der Logistik.</p>
 <hr>
 
-<!-- Ab hier könnt ihr gerne euren Code einfügen, viel Spaß! -->
+<h1> Sensordaten - FAUTOSmart </h1>
+<div class="charts-container">
+  <h2>Temperatur</h2>
+  <div id="temperatureContainer" class="chart-container" (click)="showDetails('temperature')">
+    <canvas id="temperatureCanvas" width="400" height="100"></canvas>
+    <div *ngIf="alerts['temperature']" class="alert">
+      <i class="material-icons">warning</i>
+    </div>
+  </div>
+  <div class="chart-container humidity-chart-container">
+    <h2>Luftfeuchtigkeit</h2>
+    <canvas id="humidityChart"></canvas>
+    <div *ngIf="alerts['humidity']" class="alert">
+      <i class="material-icons">warning</i>
+    </div>
+  </div>
+  <div id="batteryContainer" class="chart-container" (click)="showDetails('battery')">
+    <h2>Batteriestatus Febris</h2>
+    <canvas id="batteryChart"></canvas>
+    <div *ngIf="alerts['battery']" class="alert">
+      <i class="material-icons">warning</i>
+    </div>
+  </div>
+</div>
+<div class="ContainerTrendChart">
+  <div id="trendContainer" class="chart-container" (click)="showDetails('trend')">
+    <canvas id="trendChart"></canvas>
+    <div *ngIf="alerts['trend']" class="alert">
+      <i class="material-icons">warning</i>
+    </div>
+  </div>
+</div>
 
-<br>
-<p>Your code goes here...</p>
+<div class="charts-container h2">
+<div class="trend-charts">
+  <div class="trend-chart-container">
+    <h2>Trendanalyse - Temperatur</h2>
+    <canvas id="temperatureTrendChart" baseChart
+      [data]="plotChart('temperature')"
+      [type]="'line'">
+    </canvas>
+  </div>
+  <div class="trend-chart-container">
+    <h2>Trendanalyse - Luftfeuchtigkeit</h2>
+    <canvas id="humidityTrendChart" baseChart
+      [data]="plotChart('humidity')"
+      [type]="'line'">
+    </canvas>
+  </div>
+</div>
+</div>
