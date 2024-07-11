@@ -1,1 +1,123 @@
-// Hier werden spezifische Designregeln für die Aufgabe4-Seite gesetzt
+body {
+  background-color: #F0F4F8; /* Light grey for background */
+  font-family: 'Roboto', sans-serif;
+}
+
+.content-container {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 20px;
+}
+
+.sidebar {
+  position: sticky;
+  top: 20px;
+  width: 100px;
+  height: calc(100vh - 150px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  background-color: #379683; /* Dark green for sidebar */
+  padding: 20px 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.icon {
+  font-size: 64px;
+  color: #ffffff; /* White icons */
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+.icon:hover {
+  transform: scale(1.1);
+}
+
+.grid-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  width: calc(100% - 120px);
+  margin-left: 120px;
+}
+
+mat-grid-list {
+  width: 100%;
+  margin: 0 auto;
+  gap: 10px;
+}
+
+.dashboard-tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #A8E6CF; /* Pastel green for tiles */
+  color: #379683; /* Dark green for text */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.dashboard-tile:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.tile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tile-content {
+  font-size: 18px;
+  color: #379683; /* Dark green for text */
+}
+
+.warning {
+  color: #FF6F61; /* Coral for warnings */
+  font-weight: bold;
+}
+
+.expanded {
+  background-color: #81C7B1; /* Darker pastel green for expanded tiles */
+}
+
+.tile-image {
+  width: 100%;
+  height: auto;
+  margin-top: 20px;
+}
+
+.info-icon {
+  color: #379683; /* Dark green for info icon */
+  font-size: 24px;
+}
+
+.large-tile {
+  background-color: #DCF8E3; /* Light green for large tile */
+  color: #379683; /* Darker text */
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-height: 600px;
+  margin-bottom: 10px;
+}
+
+.large-tile-header {
+  color: #00BFA5; /* Teal for large tile header */
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.large-tile-image {
+  width: 100%;
+  height: auto;
+  margin-top: 20px;
+}

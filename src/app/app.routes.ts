@@ -29,6 +29,8 @@ export const routes: Routes = [
     path: 'aufgabe4',
     loadChildren: () =>
       import('./feature/aufgabe4/aufgabe4.routes').then((m) => m.AUFGABE4_ROUTES),
+
+    
   },
   {
     path: 'example',
