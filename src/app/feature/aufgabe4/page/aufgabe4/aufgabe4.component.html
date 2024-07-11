@@ -4,7 +4,94 @@ Ein kontrolliertes Umfeld ist für den Prozess und die Gesundheit der Mitarbeite
 Die Lösung besteht darin, eine Weboberfläche zu entwickeln, die Echtzeitdaten sowie historische Trends der relevanten Parameter während des Schweißens anzeigt.</p>
 <hr>
 
-<!-- Ab hier könnt ihr gerne euren Code einfügen, viel Spaß! -->
+<!-- Hauptcontainer für die Kacheln -->
+<div class="content-container">
+  <!-- Seitenleiste für Icons -->
+  <div class="sidebar">
+    <fa-icon [icon]="['fas', 'home']" class="icon" (click)="toggleDynamicTile('Home')"></fa-icon>
+    <fa-icon [icon]="['fas', 'phone']" class="icon" (click)="toggleDynamicTile('Telefon')"></fa-icon>
+    <fa-icon [icon]="['fas', 'envelope']" class="icon" (click)="toggleDynamicTile('Email')"></fa-icon>
+    <fa-icon [icon]="['fas', 'info-circle']" class="icon" (click)="toggleDynamicTile('Info')"></fa-icon>
+  </div>
 
-<br>
-<p>Your code goes here...</p>
+  <div class="grid-container">
+    <mat-grid-list cols="2" rowHeight="200px" gutterSize="5px">
+      <!-- Dynamische Kachel -->
+      <ng-container *ngFor="let dynamicTile of dynamicTiles">
+        <mat-grid-tile *ngIf="displayedTile === dynamicTile.title" [colspan]="2" [rowspan]="2">
+          <mat-card class="dashboard-tile" [ngClass]="{'expanded': dynamicTile.expanded}">
+            <mat-card-header class="tile-header">
+              <mat-card-title>{{dynamicTile.title}}</mat-card-title>
+              <fa-icon [icon]="['fas', 'info-circle']" class="info-icon"></fa-icon>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="tile-content">
+                <p>{{dynamicTile.content}}</p>
+                <div *ngIf="dynamicTile.expanded">
+                  <img [src]="dynamicTile.imageUrl" alt="{{dynamicTile.title}}" class="tile-image">
+                  <p>{{dynamicTile.description}}</p>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+      </ng-container>
+      
+      <!-- Vorhandene Kacheln -->
+      <ng-container *ngIf="displayedTile === ''">
+        <mat-grid-tile *ngFor="let tile of tiles" (click)="toggleTile(tile)" [colspan]="tile.expanded ? 2 : 1" [rowspan]="tile.expanded ? 2 : 1">
+          <mat-card class="dashboard-tile" [ngClass]="{'expanded': tile.expanded}">
+            <mat-card-header class="tile-header">
+              <mat-card-title>{{tile.title}}</mat-card-title>
+              <fa-icon [icon]="['fas', 'info-circle']" class="info-icon"></fa-icon>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="tile-content">
+                <p>{{tile.content}}</p>
+                <p *ngIf="tile.minValue !== undefined && tile.maxValue !== undefined">
+                  Min: {{tile.minValue}}, Max: {{tile.maxValue}}
+                </p>
+                <p *ngIf="tile.warning" class="warning">{{tile.warning}}</p>
+                <div *ngIf="tile.expanded">
+                  <img [src]="tile.imageUrl" alt="{{tile.title}}" class="tile-image">
+                  <p>{{tile.description}}</p>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+        
+        <!-- Große Kachel -->
+        <mat-grid-tile colspan="2" rowspan="3">
+          <mat-card class="large-tile">
+            <mat-card-header class="large-tile-header">
+              <mat-card-title>Smart Service</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_iGPS1Cg2mc.json" background="transparent" speed="1" style="width: 100%; height: 400px;" loop autoplay></lottie-player>
+              <div class="smart-service-block">
+                <p>Unser Smart Service bietet eine umfassende Lösung zur Gefahrenerkennung und Alarmierung, die mithilfe eines fortschrittlichen Monitoring-Tools arbeitet. Dieses Tool überwacht kontinuierlich verschiedene Umgebungsparameter und erkennt potenzielle Gefahren in Echtzeit. Zukünftig wird das System bei Erkennung einer Gefahr sofort Benachrichtigungen an die Mitarbeiter über eine Handy-App senden, was schnelle Reaktionen und Maßnahmen ermöglicht.</p>
+              </div>
+              <div class="smart-service-block">
+                <h3>Zukunftsaussichten:</h3>
+                <h4>Erweiterte Analyse und Berichte</h4>
+                <p>Künftige Versionen unseres Monitoring-Tools werden erweiterte Analysefunktionen und Berichte bieten. Diese Funktionen ermöglichen es, Trends zu erkennen und präventive Maßnahmen zu ergreifen, um die Sicherheit weiter zu erhöhen.</p>
+              </div>
+              <div class="smart-service-block">
+                <h4>KI-Integration</h4>
+                <p>Die Integration von Künstlicher Intelligenz wird die Genauigkeit der Gefahrenerkennung weiter verbessern. Zudem wird die KI automatisch optimierte Reaktionsstrategien vorschlagen, um effektiv auf erkannte Gefahren zu reagieren.</p>
+              </div>
+              <div class="smart-service-block">
+                <h4>Benutzerdefinierte Alarme</h4>
+                <p>Mitarbeiter können zukünftig personalisierte Alarme und Benachrichtigungen basierend auf ihren individuellen Rollen und Verantwortlichkeiten einstellen. Dies sorgt für eine noch gezieltere und effizientere Alarmierung und Handlungsmöglichkeit.</p>
+              </div>
+              <div class="smart-service-block">
+                <p>Mit diesen zukunftsweisenden Erweiterungen wird unser Smart Service weiterhin an der Spitze der Gefahrenerkennung und -alarmierung stehen, um die Sicherheit Ihrer Umgebung zu gewährleisten.</p>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </mat-grid-tile>
+      </ng-container>
+    </mat-grid-list>
+  </div>
+</div>
