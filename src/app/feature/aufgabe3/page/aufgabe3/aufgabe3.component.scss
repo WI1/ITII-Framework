@@ -1,1 +1,75 @@
-// Hier werden spezifische Designregeln für die Aufgabe3-Seite gesetzt
+.charts-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.chart-container {
+  flex: 1;
+  margin: 0 10px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative; /* Ensure the alerts are positioned correctly */
+}
+
+.alert {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: red;
+  font-size: 24px;
+}
+
+.alert .material-icons {
+  vertical-align: middle;
+}
+
+.chart-container.alert-active {
+  border-color: red;
+}
+
+canvas {
+  max-width: 100%;
+  width: 100%; /* Ensure canvas fills the container */
+  height: 150px; /* Set a specific height for better visibility */
+}
+
+/* Zusätzlicher Containerstil für alle Diagramme */
+.chart-container {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 10px;
+}
+
+
+
+.chart-container h2 {
+  flex: 1;
+  margin-bottom: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333333;
+
+  .trend-charts {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+  }
+  
+  .trend-chart-container {
+    width: 45%; /* Adjust the width of each trend chart container */
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+  }
+  
+  .trend-chart-container canvas {
+    width: 100%; /* Ensure canvas fills the container */
+    height: 150px; /* Adjust the height for smaller display */
+  }
+}
